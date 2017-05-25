@@ -1,24 +1,39 @@
+### status:
+tested and working on kubernetes 1.6.x ( dedicated ubuntu 16.04 servers ),
+
+
 ## Build & Package Kubernetes cifs plugin with Dockerception
 
-Provide a Kubernetes cifs for CoreOS (for example) to use, optimized for speed.
+Provide a Kubernetes cifs for CoreOS/Ubuntu/Fedora.. (for example) to use, optimized for speed.
 
 ### Delivering plugin to a docker host:
 
 Kubernetes:
 
 ```bash
-docker run -it --rm -v /etc/kubernetes/volumeplugins/hodique.info~cifs:/target sigma/cifs_k8s_plugin /target
+docker run -it --rm -v /etc/kubernetes/volumeplugins/fvigotti~cifs:/target fvigotti/cifs_k8s_plugin /target
 ```
 
 Openshift:
 
 ```bash
-docker run -it --rm -v /usr/libexec/kubernetes/kubelet-plugins/volume/exec/hodique.info~cifs:/target sigma/cifs_k8s_plugin /target
+docker run -it --rm -v /usr/libexec/kubernetes/kubelet-plugins/volume/exec/fvigotti~cifs:/target fvigotti/cifs_k8s_plugin /target
 ```
 
 After installing the plugin, restart the kubelet or the origin-node service so that the plugin is detected.
 
+### important notes:
+ - generated from a fork of -> https://github.com/sigma/cifs_k8s_plugin
+ - getvolumename is not implemented because there is a bug in kube 1.6.x https://github.com/kubernetes/kubernetes/issues/44737
+ - kubelet flags : 
+    - "--volume-plugin-dir=/etc/kubernetes/volumeplugins"
+    - "--enable-controller-attach-detach=false"
+ - controller manager flags:
+    - "--flex-volume-plugin-dir=/etc/kubernetes/volumeplugins"
+
+
 ### Sample usage
+
 
 Assuming a `//192.168.56.101/TEST` cifs share, accessible by a `TESTER` user with a `SECRET` password.
 
@@ -48,7 +63,7 @@ spec:
   volumes:
   - name: test
     flexVolume:
-      driver: "hodique.info/cifs"
+      driver: "fvigotti/cifs"
       secretRef:
         name: cifscreds
       readOnly: true
@@ -58,7 +73,24 @@ spec:
 EOF
 ```
 
+generate the secret file, nb: the `type` is mandatory   
+```sh
+cat <<EOF | tee secret.yml
+apiVersion: v1
+data:
+  password: bas64pwd
+  username: bas64user
+kind: Secret
+metadata:
+  name: cifscreds
+  namespace: default
+type: "fvigotti/cifs"
+EOF
+```
+
+
 Feel free to edit the flexVolume specification to match your needs.
+
 
 3. run the pod
 
@@ -70,9 +102,16 @@ kubectl create -f pod.yml
 
 ```sh
 kubectl get pod cc
-kubectl exec cc -- ls -l /data
+kubectl exec cc -- df ; ls -l /data
 ```
 
+5. don't panic  
+if something goes wrong , 
+look at the kubelet log of host where the pod has been deployed,
+ the cifs plugin is a bash script that can be modified in-place on that host ( add affinity to reschedule on same node )
+ 
+ 
+ 
 ### Docker building dockers - keeping them small
 
 docker build process split into a 'builder' docker and a 'runtime' 
@@ -83,11 +122,15 @@ run the following command:
 
 ```bash
 $ make container
+$ make push
 ```
 
 ### References:
 
 - https://github.com/coreos/coreos-overlay/issues/595
 - https://github.com/jamiemccrindle/dockerception
+- https://github.com/sigma/cifs_k8s_plugin
 
 *NOTE*: this repository cannot be built automatically by docker hub.
+
+

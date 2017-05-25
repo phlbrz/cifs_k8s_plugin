@@ -29,7 +29,7 @@ usage() {
 	err "\t$0 init"
 	err "\t$0 attach <json params>"
 	err "\t$0 detach <mount device>"
-	err "\t$0 mount <mount dir> <mount device> <json params>"
+	err "\t$0 mount <mount dir> <json params>" # ( $2 was  <mount device> , now it's removed )
 	err "\t$0 unmount <mount dir>"
 	exit 1
 }
@@ -48,43 +48,58 @@ ismounted() {
 }
 
 attach() {
-	log '{"status": "Success", "device": "/dev/null"}'
-	exit 0
+        log "{ \"status\": \"Not supported\" }"
+	 exit 0
+	#log '{"status": "Success", "device": "/dev/null"}'
+	#exit 0
 }
 
 detach() {
-	log '{"status": "Success"}'
-	exit 0
+        log "{ \"status\": \"Not supported\" }"
+	 exit 0
+	#log '{"status": "Success"}'
+	#exit 0
+}
+getvolumename() {
+  UUID=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 64 ; echo '')
+
+  log "{\"status\": \"Success\", \"volumeName\":\"${UUID}\"}"
+  exit 0
 }
 
 domount() {
-	MNTPATH="$1"
-	DMDEV="$2"
-	VOLUME_SRC=$(echo "$3"|"$JQ" -r '.source')
-        READ_MODE=$(echo "$3"|"$JQ" -r '.["kubernetes.io/readwrite"]')
-        MOUNT_OPTIONS=$(echo "$3"|"$JQ" -r '.mountOptions // empty')
-        USERNAME=$(echo "$3"|"$JQ" -r '.["kubernetes.io/secret/username"] // empty'|base64 -d)
-        PASSWORD=$(echo "$3"|"$JQ" -r '.["kubernetes.io/secret/password"] // empty'|base64 -d)
+        MNTPATH="$1"
+	#DMDEV="$2" ## $2 arg is deprecated ( no longer provided to flexvolume )
+	      VOLUME_SRC=$(echo "$2"|"$JQ" -r '.source') # this is a json string ie : {"kubernetes.io/fsType":"","kubernetes.io/readwrite":"ro","source":"//xxxx.xxx.com/backup"}
+        READ_MODE=$(echo "$2"|"$JQ" -r '.["kubernetes.io/readwrite"]')
+        MOUNT_OPTIONS=$(echo "$2"|"$JQ" -r '.mountOptions // empty')
+
+        USERNAME=$(echo "$2"|"$JQ" -r '.["kubernetes.io/secret/username"] // empty'|base64 -d)
+        PASSWORD=$(echo "$2"|"$JQ" -r '.["kubernetes.io/secret/password"] // empty'|base64 -d)
 
         ALL_OPTIONS="user=${USERNAME},pass=${PASSWORD},${READ_MODE}"
+
         if [ -n "$MOUNT_OPTIONS" ]; then
             ALL_OPTIONS="${ALL_OPTIONS},${MOUNT_OPTIONS}"
         fi
-        
+
         if ismounted ; then
-                log '{"status": "Success"}'
-                exit 0
+            log '{"status": "Success"}'
+            exit 0
         fi
 
         mkdir -p ${MNTPATH} &> /dev/null
 
         "$MOUNT_CIFS" -o "${ALL_OPTIONS}" "${VOLUME_SRC}" "${MNTPATH}" &> /dev/null
 
+        MOUNTCMD=$MOUNT_CIFS' -o '${ALL_OPTIONS}' '${VOLUME_SRC}' '${MNTPATH}
+
+
         if [ $? -ne 0 ]; then
-                err '{ "status": "Failure", "message": "Failed to mount device '${DMDEV}' at '${MNTPATH}' , user: '${USERNAME}' , '${VOLUME_SRC}'"}'
+                err '{ "status": "Failure", "message": "Failed to mount at '${MNTPATH}' , user: '${USERNAME}' , '${VOLUME_SRC}' , cmd ='${MOUNTCMD}', READ_MODE='${READ_MODE}' "}'
                 exit 1
         fi
-        log '{"status": "Success"}'
+
         exit 0
 }
 
@@ -133,7 +148,7 @@ case "$op" in
 		unmount $*
 		;;
 	*)
-		usage
+		#usage
+	        log "{ \"status\": \"Not supported\" }"
+                exit 0
 esac
-
-exit 1

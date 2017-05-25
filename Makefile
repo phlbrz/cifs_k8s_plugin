@@ -1,4 +1,4 @@
-IMAGE=sigma/cifs_k8s_plugin
+IMAGE=fvigotti/cifs_k8s_plugin
 BUILDER=$(IMAGE)_builder
 VERSION := $(shell git describe --always --dirty --tags)
 
