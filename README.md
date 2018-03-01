@@ -30,7 +30,7 @@ After installing the plugin, restart the kubelet or the origin-node service so t
  - controller manager flags:
     - "--flex-volume-plugin-dir=/etc/kubernetes/volumeplugins"
 
-- not sure if it's really true but seems that after the creation of the plugin directory (/etc/kubernetes/volumeplugins/fvigotti) 
+- not sure if it's really true but seems that after the creation of the plugin directory (/etc/kubernetes/volumeplugins/phlbrz) 
   kubelet needed a restart, hot-changes to plugin source can be done in place without further restarts
   
 
@@ -86,7 +86,7 @@ kind: Secret
 metadata:
   name: cifscreds
   namespace: default
-type: "fvigotti/cifs"
+type: "phlbrz/cifs"
 EOF
 ```
 
