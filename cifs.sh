@@ -47,25 +47,43 @@ ismounted() {
 	[ "${MOUNT}" == "${MNTPATH}" ]
 }
 
-attach() {
-        log "{ \"status\": \"Not supported\" }"
-	 exit 0
+#callSuccess() {
+	#log '{ "status": "Success", "message": "mount at '${MNTPATH}'" }'
+#	log '{ "status": "Success" }'
+#	exit 0
+#}
+
+#callNotSupported() {
+#	log '{ "status": "Not supported" }'
+#	exit 0
+#}
+
+#attach() {
+#	callNotSupported
+#	log '{ "status": "Not supported" }'
+#        exit 0
+
 	#log '{"status": "Success", "device": "/dev/null"}'
 	#exit 0
-}
+#}
 
-detach() {
-        log "{ \"status\": \"Not supported\" }"
-	 exit 0
-	#log '{"status": "Success"}'
+#detach() {
+#	callNotSupported
+#	log '{ "status": "Not supported" }'
+#        exit 0
+
+	#callSuccess
+#}
+
+#getvolumename() {
+#	log '{ "status": "Not supported" }'
+#        exit 0
+
+#  	callNotSupported
+	#UUID=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 64 ; echo '')
+	#log '{ "status": "Success", "message": "", "volumeName": "'${UUID}'"}'
 	#exit 0
-}
-getvolumename() {
-  UUID=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 64 ; echo '')
-
-  log "{\"status\": \"Success\", \"volumeName\":\"${UUID}\"}"
-  exit 0
-}
+#}
 
 domount() {
         MNTPATH="$1"
@@ -84,47 +102,52 @@ domount() {
         fi
 
         if ismounted ; then
-            log '{"status": "Success"}'
-            exit 0
+#	    callSuccess
+		log '{ "status": "Success", "message": "" }'
+	        exit 0
         fi
 
         mkdir -p ${MNTPATH} &> /dev/null
 
         "$MOUNT_CIFS" -o "${ALL_OPTIONS}" "${VOLUME_SRC}" "${MNTPATH}" &> /dev/null
 
-        MOUNTCMD=$MOUNT_CIFS' -o '${ALL_OPTIONS}' '${VOLUME_SRC}' '${MNTPATH}
-
-
+        #MOUNTCMD=$MOUNT_CIFS' -o '${ALL_OPTIONS}' '${VOLUME_SRC}' '${MNTPATH}
         if [ $? -ne 0 ]; then
-                err '{ "status": "Failure", "message": "Failed to mount at '${MNTPATH}' , user: '${USERNAME}' , '${VOLUME_SRC}' , cmd ='${MOUNTCMD}', READ_MODE='${READ_MODE}' "}'
+                #err '{ "status": "Failure", "message": "Failed to mount at '${MNTPATH}' , user: '${USERNAME}' , '${VOLUME_SRC}' , cmd ='${MOUNTCMD}', READ_MODE='${READ_MODE}' "}'
+                err '{ "status": "Failure", "message": "Failed to mount at '${MNTPATH}'" }'
                 exit 1
         fi
 
+	#callSuccess
+	log '{ "status": "Success", "message": "" }'
         exit 0
 }
 
 unmount() {
         MNTPATH="$1"
         if ! ismounted ; then
-                log '{"status": "Success"}'
-                exit 0
+		#callSuccess
+		log '{ "status": "Success", "message": "" }'
+  		exit 0
         fi
 
-        umount "${MNTPATH}" &> /dev/null
+        umount -l "${MNTPATH}" &> /dev/null
         if [ $? -ne 0 ]; then
-                err '{ "status": "Failed", "message": "Failed to unmount volume at '${MNTPATH}'"}'
+                err '{ "status": "Failed", "message": "Failed to unmount volume at '${MNTPATH}'" }'
                 exit 1
         fi
         rmdir "${MNTPATH}" &> /dev/null
 
-        log '{"status": "Success"}'
+	#callSuccess
+	log '{ "status": "Success", "message": "" }'
         exit 0
 }
 
 op=$1
 
 if [ "$op" = "init" ]; then
-        log '{"status": "Success"}'
+	#callSuccess
+	log '{ "status": "Success", "capabilities": { "attach": false, "selinuxRelabel": false } }'
         exit 0
 fi
 
@@ -135,12 +158,15 @@ fi
 shift
 
 case "$op" in
-        attach)
-                attach $*
-                ;;
-        detach)
-                detach $*
-                ;;
+        #attach)
+        #        attach $*
+        #        ;;
+        #detach)
+        #        detach $*
+        #        ;;
+        #getvolumename)
+        #        getvolumename $*
+        #        ;;
         mount)
                 domount $*
                 ;;
@@ -149,6 +175,8 @@ case "$op" in
 		;;
 	*)
 		#usage
-	        log "{ \"status\": \"Not supported\" }"
-                exit 0
+	        #callNotSupported
+		log '{ "status": "Not supported" }'
+ 		exit 0
+
 esac
