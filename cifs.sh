@@ -47,44 +47,6 @@ ismounted() {
 	[ "${MOUNT}" == "${MNTPATH}" ]
 }
 
-#callSuccess() {
-	#log '{ "status": "Success", "message": "mount at '${MNTPATH}'" }'
-#	log '{ "status": "Success" }'
-#	exit 0
-#}
-
-#callNotSupported() {
-#	log '{ "status": "Not supported" }'
-#	exit 0
-#}
-
-#attach() {
-#	callNotSupported
-#	log '{ "status": "Not supported" }'
-#        exit 0
-
-	#log '{"status": "Success", "device": "/dev/null"}'
-	#exit 0
-#}
-
-#detach() {
-#	callNotSupported
-#	log '{ "status": "Not supported" }'
-#        exit 0
-
-	#callSuccess
-#}
-
-#getvolumename() {
-#	log '{ "status": "Not supported" }'
-#        exit 0
-
-#  	callNotSupported
-	#UUID=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 64 ; echo '')
-	#log '{ "status": "Success", "message": "", "volumeName": "'${UUID}'"}'
-	#exit 0
-#}
-
 domount() {
         MNTPATH="$1"
 	#DMDEV="$2" ## $2 arg is deprecated ( no longer provided to flexvolume )
@@ -102,7 +64,6 @@ domount() {
         fi
 
         if ismounted ; then
-#	    callSuccess
 		log '{ "status": "Success", "message": "" }'
 	        exit 0
         fi
@@ -117,8 +78,6 @@ domount() {
                 err '{ "status": "Failure", "message": "Failed to mount at '${MNTPATH}'" }'
                 exit 1
         fi
-
-	#callSuccess
 	log '{ "status": "Success", "message": "" }'
         exit 0
 }
@@ -126,7 +85,6 @@ domount() {
 unmount() {
         MNTPATH="$1"
         if ! ismounted ; then
-		#callSuccess
 		log '{ "status": "Success", "message": "" }'
   		exit 0
         fi
@@ -137,8 +95,6 @@ unmount() {
                 exit 1
         fi
         rmdir "${MNTPATH}" &> /dev/null
-
-	#callSuccess
 	log '{ "status": "Success", "message": "" }'
         exit 0
 }
@@ -146,7 +102,6 @@ unmount() {
 op=$1
 
 if [ "$op" = "init" ]; then
-	#callSuccess
 	log '{ "status": "Success", "capabilities": { "attach": false, "selinuxRelabel": false } }'
         exit 0
 fi
@@ -158,15 +113,6 @@ fi
 shift
 
 case "$op" in
-        #attach)
-        #        attach $*
-        #        ;;
-        #detach)
-        #        detach $*
-        #        ;;
-        #getvolumename)
-        #        getvolumename $*
-        #        ;;
         mount)
                 domount $*
                 ;;
@@ -174,8 +120,6 @@ case "$op" in
 		unmount $*
 		;;
 	*)
-		#usage
-	        #callNotSupported
 		log '{ "status": "Not supported" }'
  		exit 0
 
