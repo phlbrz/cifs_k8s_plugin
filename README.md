@@ -1,6 +1,5 @@
 ### status:
-tested and working on kubernetes 1.6.x ( dedicated ubuntu 16.04 servers ),
-
+tested and working on kubernetes 1.7.x ( rhel 7.x ) with SELinux enabled. Needs DC with privileged: true at seLinuxContext.
 
 ## Build & Package Kubernetes cifs plugin with Dockerception
 
@@ -11,19 +10,19 @@ Provide a Kubernetes cifs for CoreOS/Ubuntu/Fedora.. (for example) to use, optim
 Kubernetes:
 
 ```bash
-docker run -it --rm -v /etc/kubernetes/volumeplugins/fvigotti~cifs:/target fvigotti/cifs_k8s_plugin /target
+docker run -it --rm -v /etc/kubernetes/volumeplugins/phlbrz~cifs:/target phlbrz/cifs_k8s_plugin /target
 ```
 
 Openshift:
 
 ```bash
-docker run -it --rm -v /usr/libexec/kubernetes/kubelet-plugins/volume/exec/fvigotti~cifs:/target fvigotti/cifs_k8s_plugin /target
+docker run -it --rm -v /usr/libexec/kubernetes/kubelet-plugins/volume/exec/phlbrz~cifs:/target phlbrz/cifs_k8s_plugin /target
 ```
 
 After installing the plugin, restart the kubelet or the origin-node service so that the plugin is detected.
 
 ### important notes:
- - generated from a fork of -> https://github.com/sigma/cifs_k8s_plugin
+ - generated from a fork of -> https://github.com/fvigotti/cifs_k8s_plugin
  - getvolumename is not implemented because there is a bug in kube 1.6.x https://github.com/kubernetes/kubernetes/issues/44737
  - kubelet flags : 
     - "--volume-plugin-dir=/etc/kubernetes/volumeplugins"
@@ -66,7 +65,7 @@ spec:
   volumes:
   - name: test
     flexVolume:
-      driver: "fvigotti/cifs"
+      driver: "phlbrz/cifs"
       secretRef:
         name: cifscreds
       readOnly: true
