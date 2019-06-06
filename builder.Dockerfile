@@ -1,6 +1,6 @@
 FROM fedora:22
-MAINTAINER Yann Hodique <yann.hodique@gmail.com>
-ENV UPDATED_AT 10-14-2016
+LABEL Yann Hodique <yann.hodique@gmail.com>
+ENV UPDATED_AT 06-06-2019
 
 #install required libraries & clean up to keep thin layer
 RUN dnf groupinstall -y "Development Tools" "Development Libraries" \
