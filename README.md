@@ -1,5 +1,6 @@
-### status:
-tested and working on kubernetes 1.7.x / Openshift 3.7 ( rhel 7.x ) with SELinux enabled. Needs DC with privileged: true at seLinuxContext.
+### Status
+
+Tested and working on kubernetes 1.7.x / Openshift 3.7 ( rhel 7.x ) with SELinux enabled. Needs DC with privileged: true at seLinuxContext.
 
 ## Build & Package Kubernetes cifs plugin with Dockerception
 
@@ -111,28 +112,10 @@ kubectl exec cc -- df ; ls -l /data
 if something goes wrong , 
 look at the kubelet log of host where the pod has been deployed,
  the cifs plugin is a bash script that can be modified in-place on that host ( add affinity to reschedule on same node )
- 
- 
- 
-### Docker building dockers - keeping them small
 
-docker build process split into a 'builder' docker and a 'runtime' 
-docker to keep final docker image as small as possible.
-
-To build the runtime docker image, clone this project and then
-run the following command:
-
-```bash
-$ make container
-$ make push
-```
-
-### References:
+### References
 
 - https://github.com/coreos/coreos-overlay/issues/595
 - https://github.com/jamiemccrindle/dockerception
 - https://github.com/sigma/cifs_k8s_plugin
-
-*NOTE*: this repository cannot be built automatically by docker hub.
-
-
+- https://docs.docker.com/develop/develop-images/multistage-build/
