@@ -1,4 +1,4 @@
-### Status
+# Status
 
 Tested and working on kubernetes 1.7.x / Openshift 3.7 ( rhel 7.x ) with SELinux enabled. Needs DC with privileged: true at seLinuxContext.
 
@@ -6,7 +6,7 @@ Tested and working on kubernetes 1.7.x / Openshift 3.7 ( rhel 7.x ) with SELinux
 
 Provide a Kubernetes cifs for CoreOS/Ubuntu/Fedora.. (for example) to use, optimized for speed.
 
-### Delivering plugin to a docker host:
+### Delivering plugin to a docker host
 
 Kubernetes:
 
@@ -22,21 +22,20 @@ docker run -it --rm -v /usr/libexec/kubernetes/kubelet-plugins/volume/exec/phlbr
 
 After installing the plugin, restart the kubelet or the origin-node service so that the plugin is detected.
 
-### important notes:
- - generated from a fork of -> https://github.com/fvigotti/cifs_k8s_plugin
- - getvolumename is not implemented because there is a bug in kube 1.6.x https://github.com/kubernetes/kubernetes/issues/44737
- - kubelet flags : 
-    - "--volume-plugin-dir=/etc/kubernetes/volumeplugins"
-    - "--enable-controller-attach-detach=false"
- - controller manager flags:
-    - "--flex-volume-plugin-dir=/etc/kubernetes/volumeplugins"
+### Important notes
 
-- not sure if it's really true but seems that after the creation of the plugin directory (/etc/kubernetes/volumeplugins/phlbrz) 
+- generated from a fork of -> https://github.com/fvigotti/cifs_k8s_plugin
+- getvolumename is not implemented because there is a bug in kube 1.6.x https://github.com/kubernetes/kubernetes/issues/44737
+- kubelet flags : 
+  - "--volume-plugin-dir=/etc/kubernetes/volumeplugins"
+  - "--enable-controller-attach-detach=false"
+- controller manager flags:
+  - "--flex-volume-plugin-dir=/etc/kubernetes/volumeplugins"
+
+- not sure if it's really true but seems that after the creation of the plugin directory (/etc/kubernetes/volumeplugins/phlbrz)
   kubelet needed a restart, hot-changes to plugin source can be done in place without further restarts
-  
 
 ### Sample usage
-
 
 Assuming a `//192.168.56.101/TEST` cifs share, accessible by a `TESTER` user with a `SECRET` password.
 
@@ -76,7 +75,8 @@ spec:
 EOF
 ```
 
-generate the secret file, nb: the `type` is mandatory   
+generate the secret file, nb: the `type` is mandatory
+
 ```sh
 cat <<EOF | tee secret.yml
 apiVersion: v1
@@ -91,9 +91,7 @@ type: "phlbrz/cifs"
 EOF
 ```
 
-
 Feel free to edit the flexVolume specification to match your needs.
-
 
 3. run the pod
 
@@ -109,9 +107,7 @@ kubectl exec cc -- df ; ls -l /data
 ```
 
 5. don't panic  
-if something goes wrong , 
-look at the kubelet log of host where the pod has been deployed,
- the cifs plugin is a bash script that can be modified in-place on that host ( add affinity to reschedule on same node )
+if something goes wrong , look at the kubelet log of host where the pod has been deployed, the cifs plugin is a bash script that can be modified in-place on that host ( add affinity to reschedule on same node )
 
 ### References
 
