@@ -1,6 +1,6 @@
 # Status
 
-Tested and working on kubernetes 1.7.x / Openshift 3.7 ( rhel 7.x ) with SELinux enabled. Needs DC with privileged: true at seLinuxContext.
+Tested and working on kubernetes 1.7.x and 1.11.x / Openshift 3.7 and 3.11 ( rhel 7.x ) with SELinux enabled. Needs DC with privileged: true at seLinuxContext.
 
 ## Build & Package Kubernetes cifs plugin with Dockerception
 
