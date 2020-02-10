@@ -1,6 +1,10 @@
-# Status
+# Deprecated
 
-Tested and working on kubernetes 1.7.x and 1.11.x / Openshift 3.7 and 3.11 ( rhel 7.x ) with SELinux enabled. Needs DC with privileged: true at seLinuxContext.
+* Use https://blog.openshift.com/mounting-cifs-shares-in-openshift/ 
+
+## Status
+
+~~Tested and working on kubernetes 1.7.x and 1.11.x / Openshift 3.7 and 3.11 ( rhel 7.x ) with SELinux enabled. Needs DC with privileged: true at seLinuxContext.~~
 
 ## Build & Package Kubernetes cifs plugin with Dockerception
 
